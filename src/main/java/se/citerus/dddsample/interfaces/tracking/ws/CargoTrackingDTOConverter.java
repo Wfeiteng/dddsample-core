@@ -15,31 +15,20 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class CargoTrackingDTOConverter {
-    private static final DateTimeFormatter formatter = DateTimeFormatter
-            .ofPattern("MMM d, uuuu, h:mm:ss a", Locale.ENGLISH) // See https://github.com/spring-projects/spring-framework/wiki/Date-and-Time-Formatting-with-JDK-20-and-higher#recommendations
-            .withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, uuuu, h:mm:ss a",
+                                                                                   Locale.ENGLISH) // See https://github.com/spring-projects/spring-framework/wiki/Date-and-Time-Formatting-with-JDK-20-and-higher#recommendations
+                                                                        .withZone(ZoneOffset.UTC);
 
     public static CargoTrackingDTO convert(Cargo cargo, List<HandlingEvent> handlingEvents, MessageSource messageSource, Locale locale) {
         List<HandlingEventDTO> handlingEventDTOs = convertHandlingEvents(handlingEvents, cargo, messageSource, locale);
-        return new CargoTrackingDTO(
-                convertTrackingId(cargo),
-                convertStatusText(cargo, messageSource, locale),
-                convertDestination(cargo),
-                convertEta(cargo),
-                convertNextExpectedActivity(cargo),
-                convertIsMisdirected(cargo),
-                handlingEventDTOs);
+        return new CargoTrackingDTO(convertTrackingId(cargo), convertStatusText(cargo, messageSource, locale), convertDestination(cargo), convertEta(cargo),
+                                    convertNextExpectedActivity(cargo), convertIsMisdirected(cargo), handlingEventDTOs);
     }
 
     private static List<HandlingEventDTO> convertHandlingEvents(List<HandlingEvent> handlingEvents, Cargo cargo, MessageSource messageSource, Locale locale) {
-        return handlingEvents.stream().map(he -> new HandlingEventDTO(
-                convertLocation(he),
-                he.completionTime().toString(),
-                convertType(he),
-                convertVoyageNumber(he),
-                convertIsExpected(he, cargo),
-                convertDescription(he, messageSource, locale)
-        )).collect(Collectors.toList());
+        return handlingEvents.stream().map(
+                he -> new HandlingEventDTO(convertLocation(he), he.completionTime().toString(), convertType(he), convertVoyageNumber(he), convertIsExpected(he, cargo),
+                                           convertDescription(he, messageSource, locale))).collect(Collectors.toList());
     }
 
     protected static String convertDescription(HandlingEvent handlingEvent, MessageSource messageSource, Locale locale) {
@@ -48,19 +37,12 @@ public class CargoTrackingDTOConverter {
         switch (handlingEvent.type()) {
             case LOAD:
             case UNLOAD:
-                args = new Object[]{
-                        handlingEvent.voyage().voyageNumber().idString(),
-                        handlingEvent.location().name(),
-                        convertTime(handlingEvent)
-                };
+                args = new Object[]{handlingEvent.voyage().voyageNumber().idString(), handlingEvent.location().name(), convertTime(handlingEvent)};
                 break;
             case RECEIVE:
             case CUSTOMS:
             case CLAIM:
-                args = new Object[]{
-                        handlingEvent.location().name(),
-                        convertTime(handlingEvent)
-                };
+                args = new Object[]{handlingEvent.location().name(), convertTime(handlingEvent)};
                 break;
 
             default:
@@ -85,8 +67,7 @@ public class CargoTrackingDTOConverter {
     }
 
     private static String convertTime(HandlingEvent handlingEvent) {
-        return formatter
-                .format(handlingEvent.completionTime());
+        return formatter.format(handlingEvent.completionTime());
     }
 
     private static String convertLocation(HandlingEvent handlingEvent) {
@@ -138,13 +119,9 @@ public class CargoTrackingDTOConverter {
         String text = "Next expected activity is to ";
         HandlingEvent.Type type = activity.type();
         if (type.sameValueAs(HandlingEvent.Type.LOAD)) {
-            return
-                    text + type.name().toLowerCase() + " cargo onto voyage " + activity.voyage().voyageNumber() +
-                            " in " + activity.location().name();
+            return text + type.name().toLowerCase() + " cargo onto voyage " + activity.voyage().voyageNumber() + " in " + activity.location().name();
         } else if (type.sameValueAs(HandlingEvent.Type.UNLOAD)) {
-            return
-                    text + type.name().toLowerCase() + " cargo off of " + activity.voyage().voyageNumber() +
-                            " in " + activity.location().name();
+            return text + type.name().toLowerCase() + " cargo off of " + activity.voyage().voyageNumber() + " in " + activity.location().name();
         } else {
             return text + type.name().toLowerCase() + " cargo in " + activity.location().name();
         }

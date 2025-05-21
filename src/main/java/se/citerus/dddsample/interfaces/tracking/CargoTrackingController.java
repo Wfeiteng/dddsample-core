@@ -41,9 +41,7 @@ public final class CargoTrackingController {
     private final MessageSource messageSource;
     private final TrackCommandValidator trackCommandValidator;
 
-    public CargoTrackingController(@NonNull CargoRepository cargoRepository,
-                                   @NonNull HandlingEventRepository handlingEventRepository,
-                                   @NonNull MessageSource messageSource,
+    public CargoTrackingController(@NonNull CargoRepository cargoRepository, @NonNull HandlingEventRepository handlingEventRepository, @NonNull MessageSource messageSource,
                                    @NonNull TrackCommandValidator trackCommandValidator) {
         this.cargoRepository = cargoRepository;
         this.handlingEventRepository = handlingEventRepository;
@@ -59,10 +57,7 @@ public final class CargoTrackingController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    private String onSubmit(final HttpServletRequest request,
-                            final TrackCommand command,
-                            final Map<String, Object> model,
-                            final BindingResult bindingResult) {
+    private String onSubmit(final HttpServletRequest request, final TrackCommand command, final Map<String, Object> model, final BindingResult bindingResult) {
         trackCommandValidator.validate(command, bindingResult);
 
         final TrackingId trackingId = new TrackingId(command.getTrackingId());

@@ -66,13 +66,11 @@ public final class CargoAdminController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public void register(HttpServletRequest request, HttpServletResponse response,
-                         RegistrationCommand command) throws Exception {
+    public void register(HttpServletRequest request, HttpServletResponse response, RegistrationCommand command) throws Exception {
 
         LocalDate arrivalDeadline = LocalDate.parse(command.getArrivalDeadline(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        String trackingId = bookingServiceFacade.bookNewCargo(
-            command.getOriginUnlocode(), command.getDestinationUnlocode(), arrivalDeadline.atStartOfDay().toInstant(ZoneOffset.UTC)
-        );
+        String trackingId = bookingServiceFacade.bookNewCargo(command.getOriginUnlocode(), command.getDestinationUnlocode(),
+                                                              arrivalDeadline.atStartOfDay().toInstant(ZoneOffset.UTC));
         response.sendRedirect("show?trackingId=" + trackingId);
     }
 
@@ -109,13 +107,7 @@ public final class CargoAdminController {
     public void assignItinerary(HttpServletRequest request, HttpServletResponse response, RouteAssignmentCommand command) throws Exception {
         List<LegDTO> legDTOs = new ArrayList<LegDTO>(command.getLegs().size());
         for (RouteAssignmentCommand.LegCommand leg : command.getLegs()) {
-            legDTOs.add(new LegDTO(
-                leg.getVoyageNumber(),
-                leg.getFromUnLocode(),
-                leg.getToUnLocode(),
-                leg.getFromDate(),
-                leg.getToDate())
-            );
+            legDTOs.add(new LegDTO(leg.getVoyageNumber(), leg.getFromUnLocode(), leg.getToUnLocode(), leg.getFromDate(), leg.getToDate()));
         }
 
         RouteCandidateDTO selectedRoute = new RouteCandidateDTO(legDTOs);

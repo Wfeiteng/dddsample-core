@@ -71,7 +71,8 @@ public class InterfacesApplicationContext implements WebMvcConfigurer {
     }
 
     @Bean
-    public BookingServiceFacade bookingServiceFacade(BookingService bookingService, LocationRepository locationRepository, CargoRepository cargoRepository, VoyageRepository voyageRepository) {
+    public BookingServiceFacade bookingServiceFacade(BookingService bookingService, LocationRepository locationRepository, CargoRepository cargoRepository,
+                                                     VoyageRepository voyageRepository) {
         return new BookingServiceFacadeImpl(bookingService, locationRepository, cargoRepository, voyageRepository);
     }
 
@@ -95,11 +96,9 @@ public class InterfacesApplicationContext implements WebMvcConfigurer {
             log.info("No UploadDirectoryScannerBean found, skipping creation of scheduler.");
             return null;
         }
-        ThreadPoolTaskScheduler threadPoolTaskScheduler
-            = new ThreadPoolTaskScheduler();
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setPoolSize(10);
-        threadPoolTaskScheduler.setThreadNamePrefix(
-            "ThreadPoolTaskScheduler");
+        threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         threadPoolTaskScheduler.initialize();
         threadPoolTaskScheduler.scheduleAtFixedRate(scanner, 5000);
         return threadPoolTaskScheduler;

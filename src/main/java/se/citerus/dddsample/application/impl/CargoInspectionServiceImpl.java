@@ -17,42 +17,44 @@ import java.util.Objects;
 
 public class CargoInspectionServiceImpl implements CargoInspectionService {
 
-  private final ApplicationEvents applicationEvents;
-  private final CargoRepository cargoRepository;
-  private final HandlingEventRepository handlingEventRepository;
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final ApplicationEvents applicationEvents;
+    private final CargoRepository cargoRepository;
+    private final HandlingEventRepository handlingEventRepository;
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup()
+                                                                              .lookupClass());
 
-  public CargoInspectionServiceImpl(final ApplicationEvents applicationEvents,
-                                    final CargoRepository cargoRepository,
-                                    final HandlingEventRepository handlingEventRepository) {
-    this.applicationEvents = applicationEvents;
-    this.cargoRepository = cargoRepository;
-    this.handlingEventRepository = handlingEventRepository;
-  }
-
-  @Override
-  @Transactional
-  public void inspectCargo(final TrackingId trackingId) {
-    Objects.requireNonNull(trackingId, "Tracking ID is required");
-
-    final Cargo cargo = cargoRepository.find(trackingId);
-    if (cargo == null) {
-      logger.warn("Can't inspect non-existing cargo {}", trackingId);
-      return;
+    public CargoInspectionServiceImpl(final ApplicationEvents applicationEvents, final CargoRepository cargoRepository,
+                                      final HandlingEventRepository handlingEventRepository) {
+        this.applicationEvents = applicationEvents;
+        this.cargoRepository = cargoRepository;
+        this.handlingEventRepository = handlingEventRepository;
     }
 
-    final HandlingHistory handlingHistory = handlingEventRepository.lookupHandlingHistoryOfCargo(trackingId);
+    @Override
+    @Transactional
+    public void inspectCargo(final TrackingId trackingId) {
+        Objects.requireNonNull(trackingId, "Tracking ID is required");
 
-    cargo.deriveDeliveryProgress(handlingHistory);
+        final Cargo cargo = cargoRepository.find(trackingId);
+        if (cargo == null) {
+            logger.warn("Can't inspect non-existing cargo {}", trackingId);
+            return;
+        }
 
-    if (cargo.delivery().isMisdirected()) {
-      applicationEvents.cargoWasMisdirected(cargo);
+        final HandlingHistory handlingHistory = handlingEventRepository.lookupHandlingHistoryOfCargo(trackingId);
+
+        cargo.deriveDeliveryProgress(handlingHistory);
+
+        if (cargo.delivery()
+                 .isMisdirected()) {
+            applicationEvents.cargoWasMisdirected(cargo);
+        }
+
+        if (cargo.delivery()
+                 .isUnloadedAtDestination()) {
+            applicationEvents.cargoHasArrived(cargo);
+        }
+
+        cargoRepository.store(cargo);
     }
-
-    if (cargo.delivery().isUnloadedAtDestination()) {
-      applicationEvents.cargoHasArrived(cargo);
-    }
-
-    cargoRepository.store(cargo);
-  }
 }

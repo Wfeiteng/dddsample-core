@@ -26,7 +26,7 @@ import static se.citerus.dddsample.infrastructure.sampledata.SampleVoyages.*;
 /**
  * Provides sample data.
  */
-public class SampleDataGenerator  {
+public class SampleDataGenerator {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SampleDataGenerator.class);
 
     private static final Timestamp base = getBaseTimeStamp();
@@ -37,12 +37,10 @@ public class SampleDataGenerator  {
     private final HandlingEventRepository handlingEventRepository;
     private final PlatformTransactionManager transactionManager;
 
-    public SampleDataGenerator(@NonNull CargoRepository cargoRepository,
-                               @NonNull VoyageRepository voyageRepository,
-                               @NonNull LocationRepository locationRepository,
-                               @NonNull HandlingEventRepository handlingEventRepository,
+    public SampleDataGenerator(@NonNull CargoRepository cargoRepository, @NonNull VoyageRepository voyageRepository,
+                               @NonNull LocationRepository locationRepository, @NonNull HandlingEventRepository handlingEventRepository,
                                @NonNull PlatformTransactionManager transactionManager) {
-        this.cargoRepository =cargoRepository;
+        this.cargoRepository = cargoRepository;
         this.voyageRepository = voyageRepository;
         this.locationRepository = locationRepository;
         this.handlingEventRepository = handlingEventRepository;
@@ -54,10 +52,7 @@ public class SampleDataGenerator  {
     protected void generate() {
         TransactionTemplate tt = new TransactionTemplate(transactionManager);
 
-        HandlingEventFactory handlingEventFactory = new HandlingEventFactory(
-                cargoRepository,
-                voyageRepository,
-                locationRepository);
+        HandlingEventFactory handlingEventFactory = new HandlingEventFactory(cargoRepository, voyageRepository, locationRepository);
         loadHibernateData(tt, handlingEventFactory);
     }
 
@@ -80,29 +75,27 @@ public class SampleDataGenerator  {
                 TrackingId trackingId = new TrackingId("ABC123");
                 Cargo abc123 = new Cargo(trackingId, routeSpecification);
 
-                Itinerary itinerary = new Itinerary(List.of(
-                        new Leg(HONGKONG_TO_NEW_YORK, HONGKONG, NEWYORK, toDate("2009-03-02"), toDate("2009-03-05")),
-                        new Leg(NEW_YORK_TO_DALLAS, NEWYORK, DALLAS, toDate("2009-03-06"), toDate("2009-03-08")),
-                        new Leg(DALLAS_TO_HELSINKI, DALLAS, HELSINKI, toDate("2009-03-09"), toDate("2009-03-12"))
-                ));
+                Itinerary itinerary = new Itinerary(
+                        List.of(new Leg(HONGKONG_TO_NEW_YORK, HONGKONG, NEWYORK, toDate("2009-03-02"), toDate("2009-03-05")),
+                                new Leg(NEW_YORK_TO_DALLAS, NEWYORK, DALLAS, toDate("2009-03-06"), toDate("2009-03-08")),
+                                new Leg(DALLAS_TO_HELSINKI, DALLAS, HELSINKI, toDate("2009-03-09"), toDate("2009-03-12"))));
                 abc123.assignToRoute(itinerary);
 
                 cargoRepository.store(abc123);
 
                 try {
-                    HandlingEvent event1 = handlingEventFactory.createHandlingEvent(
-                            Instant.now(), toDate("2009-03-01"), trackingId, null, HONGKONG.unLocode(), HandlingEvent.Type.RECEIVE
-                    );
+                    HandlingEvent event1 = handlingEventFactory.createHandlingEvent(Instant.now(), toDate("2009-03-01"), trackingId, null,
+                                                                                    HONGKONG.unLocode(), HandlingEvent.Type.RECEIVE);
                     handlingEventRepository.store(event1);
 
-                    HandlingEvent event2 = handlingEventFactory.createHandlingEvent(
-                            Instant.now(), toDate("2009-03-02"), trackingId, HONGKONG_TO_NEW_YORK.voyageNumber(), HONGKONG.unLocode(), HandlingEvent.Type.LOAD
-                    );
+                    HandlingEvent event2 = handlingEventFactory.createHandlingEvent(Instant.now(), toDate("2009-03-02"), trackingId,
+                                                                                    HONGKONG_TO_NEW_YORK.voyageNumber(), HONGKONG.unLocode(),
+                                                                                    HandlingEvent.Type.LOAD);
                     handlingEventRepository.store(event2);
 
-                    HandlingEvent event3 = handlingEventFactory.createHandlingEvent(
-                            Instant.now(), toDate("2009-03-05"), trackingId, HONGKONG_TO_NEW_YORK.voyageNumber(), NEWYORK.unLocode(), HandlingEvent.Type.UNLOAD
-                    );
+                    HandlingEvent event3 = handlingEventFactory.createHandlingEvent(Instant.now(), toDate("2009-03-05"), trackingId,
+                                                                                    HONGKONG_TO_NEW_YORK.voyageNumber(), NEWYORK.unLocode(),
+                                                                                    HandlingEvent.Type.UNLOAD);
                     handlingEventRepository.store(event3);
                 } catch (CannotCreateHandlingEventException e) {
                     throw new RuntimeException(e);
@@ -119,34 +112,32 @@ public class SampleDataGenerator  {
                 TrackingId trackingId1 = new TrackingId("JKL567");
                 Cargo jkl567 = new Cargo(trackingId1, routeSpecification1);
 
-                Itinerary itinerary1 = new Itinerary(List.of(
-                        new Leg(HONGKONG_TO_NEW_YORK, HANGZHOU, NEWYORK, toDate("2009-03-03"), toDate("2009-03-05")),
-                        new Leg(NEW_YORK_TO_DALLAS, NEWYORK, DALLAS, toDate("2009-03-06"), toDate("2009-03-08")),
-                        new Leg(DALLAS_TO_HELSINKI, DALLAS, STOCKHOLM, toDate("2009-03-09"), toDate("2009-03-11"))
-                ));
+                Itinerary itinerary1 = new Itinerary(
+                        List.of(new Leg(HONGKONG_TO_NEW_YORK, HANGZHOU, NEWYORK, toDate("2009-03-03"), toDate("2009-03-05")),
+                                new Leg(NEW_YORK_TO_DALLAS, NEWYORK, DALLAS, toDate("2009-03-06"), toDate("2009-03-08")),
+                                new Leg(DALLAS_TO_HELSINKI, DALLAS, STOCKHOLM, toDate("2009-03-09"), toDate("2009-03-11"))));
                 jkl567.assignToRoute(itinerary1);
 
                 cargoRepository.store(jkl567);
 
                 try {
-                    HandlingEvent event1 = handlingEventFactory.createHandlingEvent(
-                            Instant.now(), toDate("2009-03-01"), trackingId1, null, HANGZHOU.unLocode(), HandlingEvent.Type.RECEIVE
-                    );
+                    HandlingEvent event1 = handlingEventFactory.createHandlingEvent(Instant.now(), toDate("2009-03-01"), trackingId1, null,
+                                                                                    HANGZHOU.unLocode(), HandlingEvent.Type.RECEIVE);
                     handlingEventRepository.store(event1);
 
-                    HandlingEvent event2 = handlingEventFactory.createHandlingEvent(
-                            Instant.now(), toDate("2009-03-03"), trackingId1, HONGKONG_TO_NEW_YORK.voyageNumber(), HANGZHOU.unLocode(), HandlingEvent.Type.LOAD
-                    );
+                    HandlingEvent event2 = handlingEventFactory.createHandlingEvent(Instant.now(), toDate("2009-03-03"), trackingId1,
+                                                                                    HONGKONG_TO_NEW_YORK.voyageNumber(), HANGZHOU.unLocode(),
+                                                                                    HandlingEvent.Type.LOAD);
                     handlingEventRepository.store(event2);
 
-                    HandlingEvent event3 = handlingEventFactory.createHandlingEvent(
-                            Instant.now(), toDate("2009-03-05"), trackingId1, HONGKONG_TO_NEW_YORK.voyageNumber(), NEWYORK.unLocode(), HandlingEvent.Type.UNLOAD
-                    );
+                    HandlingEvent event3 = handlingEventFactory.createHandlingEvent(Instant.now(), toDate("2009-03-05"), trackingId1,
+                                                                                    HONGKONG_TO_NEW_YORK.voyageNumber(), NEWYORK.unLocode(),
+                                                                                    HandlingEvent.Type.UNLOAD);
                     handlingEventRepository.store(event3);
 
-                    HandlingEvent event4 = handlingEventFactory.createHandlingEvent(
-                            Instant.now(), toDate("2009-03-06"), trackingId1, HONGKONG_TO_NEW_YORK.voyageNumber(), NEWYORK.unLocode(), HandlingEvent.Type.LOAD
-                    );
+                    HandlingEvent event4 = handlingEventFactory.createHandlingEvent(Instant.now(), toDate("2009-03-06"), trackingId1,
+                                                                                    HONGKONG_TO_NEW_YORK.voyageNumber(), NEWYORK.unLocode(),
+                                                                                    HandlingEvent.Type.LOAD);
                     handlingEventRepository.store(event4);
 
                 } catch (CannotCreateHandlingEventException e) {

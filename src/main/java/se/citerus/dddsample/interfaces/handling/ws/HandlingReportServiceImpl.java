@@ -25,24 +25,27 @@ import static se.citerus.dddsample.interfaces.handling.HandlingReportParser.pars
  */
 @RestController
 public class HandlingReportServiceImpl implements HandlingReportService {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup()
+                                                                              .lookupClass());
 
-  private final ApplicationEvents applicationEvents;
+    private final ApplicationEvents applicationEvents;
 
-  public HandlingReportServiceImpl(ApplicationEvents applicationEvents) {
-    this.applicationEvents = applicationEvents;
-  }
-
-  @PostMapping(value = "/handlingReport", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-  @Override
-  public ResponseEntity<?> submitReport(@Valid @RequestBody HandlingReport handlingReport) {
-    try {
-      List<HandlingEventRegistrationAttempt> attempts = parse(handlingReport);
-      attempts.forEach(applicationEvents::receivedHandlingEventRegistrationAttempt);
-    } catch (Exception e) {
-      logger.error("Unexpected error in submitReport", e);
-      return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
+    public HandlingReportServiceImpl(ApplicationEvents applicationEvents) {
+        this.applicationEvents = applicationEvents;
     }
-    return ResponseEntity.status(CREATED).build();
-  }
+
+    @PostMapping(value = "/handlingReport", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @Override
+    public ResponseEntity<?> submitReport(@Valid @RequestBody HandlingReport handlingReport) {
+        try {
+            List<HandlingEventRegistrationAttempt> attempts = parse(handlingReport);
+            attempts.forEach(applicationEvents::receivedHandlingEventRegistrationAttempt);
+        } catch (Exception e) {
+            logger.error("Unexpected error in submitReport", e);
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                                 .body("Internal server error: " + e.getMessage());
+        }
+        return ResponseEntity.status(CREATED)
+                             .build();
+    }
 }

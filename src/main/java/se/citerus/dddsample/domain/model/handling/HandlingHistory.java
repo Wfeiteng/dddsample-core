@@ -28,9 +28,7 @@ public class HandlingHistory implements ValueObject<HandlingHistory> {
      * @return A distinct list (no duplicate registrations) of handling events, ordered by completion time.
      */
     public List<HandlingEvent> distinctEventsByCompletionTime() {
-        final List<HandlingEvent> ordered = new ArrayList<>(
-                new HashSet<>(handlingEvents)
-        );
+        final List<HandlingEvent> ordered = new ArrayList<>(new HashSet<>(handlingEvents));
         ordered.sort(BY_COMPLETION_TIME_COMPARATOR);
         return Collections.unmodifiableList(ordered);
     }
@@ -49,13 +47,16 @@ public class HandlingHistory implements ValueObject<HandlingHistory> {
 
     /**
      * Filters handling history events to remove events for unrelated cargo.
+     *
      * @param trackingId the trackingId of the cargo to filter events for.
      * @return A new handling history with events matching the supplied tracking id.
      */
     public HandlingHistory filterOnCargo(TrackingId trackingId) {
         List<HandlingEvent> events = handlingEvents.stream()
-                .filter(he -> he.cargo().trackingId().sameValueAs(trackingId))
-                .collect(Collectors.toList());
+                                                   .filter(he -> he.cargo()
+                                                                   .trackingId()
+                                                                   .sameValueAs(trackingId))
+                                                   .collect(Collectors.toList());
         return new HandlingHistory(events);
     }
 
@@ -78,7 +79,6 @@ public class HandlingHistory implements ValueObject<HandlingHistory> {
         return handlingEvents.hashCode();
     }
 
-    private static final Comparator<HandlingEvent> BY_COMPLETION_TIME_COMPARATOR =
-            Comparator.comparing(HandlingEvent::completionTime);
+    private static final Comparator<HandlingEvent> BY_COMPLETION_TIME_COMPARATOR = Comparator.comparing(HandlingEvent::completionTime);
 
 }

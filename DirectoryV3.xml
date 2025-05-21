@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ <trees>
+     <tree path="/src/main/java/se/citerus/dddsample/interfaces" title="done+对接接口，和application层有啥区别" extension="" presentableText=""
+           tooltipTitle="" icon="" textColor="" backgroundColor=""/>
+     <tree path="/src/main/java/se/citerus/dddsample/config" title="done"/>
+     <tree path="/src/main/java/se/citerus/dddsample/infrastructure" title="基础设施层"/>
+     <tree path="/src/main/java/se/citerus/dddsample/application" title="依赖domain"/>
+     <tree path="/src/main/java/se/citerus/dddsample/domain/model" title="bean和sql接口"/>
+     <tree path="/src/main/java/se/citerus/dddsample/domain/shared" title="公共类等"/>
+ </trees>

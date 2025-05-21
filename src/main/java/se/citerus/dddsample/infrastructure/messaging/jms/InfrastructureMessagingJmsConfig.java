@@ -26,21 +26,25 @@ public class InfrastructureMessagingJmsConfig {
     private String brokerUrl;
 
     @Bean(value = "cargoHandledConsumer", destroyMethod = "close")
-    public MessageConsumer cargoHandledConsumer(Session session, @Qualifier("cargoHandledQueue") Destination destination, CargoInspectionService cargoInspectionService) throws JMSException {
+    public MessageConsumer cargoHandledConsumer(Session session, @Qualifier("cargoHandledQueue") Destination destination,
+                                                CargoInspectionService cargoInspectionService) throws JMSException {
         MessageConsumer consumer = session.createConsumer(destination);
         consumer.setMessageListener(new CargoHandledConsumer(cargoInspectionService));
         return consumer;
     }
 
     @Bean(value = "handlingEventRegistrationAttemptConsumer", destroyMethod = "close")
-    public MessageConsumer handlingEventRegistrationAttemptConsumer(Session session, @Qualifier("handlingEventRegistrationAttemptQueue") Destination destination, HandlingEventService handlingEventService) throws JMSException {
+    public MessageConsumer handlingEventRegistrationAttemptConsumer(Session session,
+                                                                    @Qualifier("handlingEventRegistrationAttemptQueue") Destination destination,
+                                                                    HandlingEventService handlingEventService) throws JMSException {
         MessageConsumer consumer = session.createConsumer(destination);
         consumer.setMessageListener(new HandlingEventRegistrationAttemptConsumer(handlingEventService));
         return consumer;
     }
 
     @Bean(value = "misdirectedCargoConsumer", destroyMethod = "close")
-    public MessageConsumer misdirectedCargoConsumer(Session session, @Qualifier("misdirectedCargoQueue") Destination destination) throws JMSException {
+    public MessageConsumer misdirectedCargoConsumer(Session session,
+                                                    @Qualifier("misdirectedCargoQueue") Destination destination) throws JMSException {
         MessageConsumer consumer = session.createConsumer(destination);
         consumer.setMessageListener(new SimpleLoggingConsumer());
         return consumer;
@@ -54,7 +58,8 @@ public class InfrastructureMessagingJmsConfig {
     }
 
     @Bean(value = "rejectedRegistrationAttemptsConsumer", destroyMethod = "close")
-    public MessageConsumer rejectedRegistrationAttemptsConsumer(Session session, @Qualifier("rejectedRegistrationAttemptsQueue") Destination destination) throws JMSException {
+    public MessageConsumer rejectedRegistrationAttemptsConsumer(Session session,
+                                                                @Qualifier("rejectedRegistrationAttemptsQueue") Destination destination) throws JMSException {
         MessageConsumer consumer = session.createConsumer(destination);
         consumer.setMessageListener(new SimpleLoggingConsumer());
         return consumer;
@@ -119,9 +124,12 @@ public class InfrastructureMessagingJmsConfig {
 
     @Bean
     public ApplicationEvents applicationEvents(JmsOperations jmsOperations, @Qualifier("cargoHandledQueue") Destination cargoHandledQueue,
-                                               @Qualifier("misdirectedCargoQueue") Destination misdirectedCargoQueue, @Qualifier("deliveredCargoQueue") Destination deliveredCargoQueue,
-                                               @Qualifier("rejectedRegistrationAttemptsQueue") Destination rejectedRegistrationAttemptsQueue, @Qualifier("handlingEventRegistrationAttemptQueue") Destination handlingEventRegistrationAttemptQueue) {
-        return new JmsApplicationEventsImpl(jmsOperations, cargoHandledQueue, misdirectedCargoQueue, deliveredCargoQueue, rejectedRegistrationAttemptsQueue, handlingEventRegistrationAttemptQueue);
+                                               @Qualifier("misdirectedCargoQueue") Destination misdirectedCargoQueue,
+                                               @Qualifier("deliveredCargoQueue") Destination deliveredCargoQueue,
+                                               @Qualifier("rejectedRegistrationAttemptsQueue") Destination rejectedRegistrationAttemptsQueue,
+                                               @Qualifier("handlingEventRegistrationAttemptQueue") Destination handlingEventRegistrationAttemptQueue) {
+        return new JmsApplicationEventsImpl(jmsOperations, cargoHandledQueue, misdirectedCargoQueue, deliveredCargoQueue,
+                                            rejectedRegistrationAttemptsQueue, handlingEventRegistrationAttemptQueue);
     }
 
     private Destination createQueue(String queueName) {
